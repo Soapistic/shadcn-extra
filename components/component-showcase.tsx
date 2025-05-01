@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Code, DollarSign, Palette, Settings } from "lucide-react";
+import { CircleDot,  DollarSign } from "lucide-react";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import { ComponentDisplay } from "@/components/component-display";
@@ -18,6 +18,16 @@ const components = [
       "This component is built using a composition of the <Popover /> and the <Command /> components from shadcn.",
     category: "Inputs",
     icon: <DollarSign className="h-4 w-4" />,
+  },
+  {
+    id: "double-combobox",
+    name: "Double combobox",
+    description:
+      "A customized combobox component that allows for two selections",
+    requirement:
+      "This component is built using a composition of the <Popover /> and the <Command /> components from shadcn.",
+    category: "Inputs",
+    icon: <CircleDot className="h-4 w-4" />,
   }
 ];
 

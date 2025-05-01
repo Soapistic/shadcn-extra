@@ -1,9 +1,5 @@
 "use client";
-import { Code, Copy, ExternalLink } from "lucide-react";
-
-import { GradientButton } from "@/components/custom/gradient-button";
-import { CodeBlock } from "@/components/custom/code-block";
-import { SettingsPanel } from "@/components/custom/settings-panel";
+import { Code, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -69,19 +65,10 @@ export function ComponentDisplay({ component }: ComponentDisplayProps) {
 
 function ComponentPreview({ id }: { id: string }) {
   switch (id) {
-    case "gradient-button":
-      return <GradientButton>Gradient Button</GradientButton>;
     case "price-input":
       return <PriceInput />;
-    case "code-block":
-      return (
-        <CodeBlock
-          code="const greeting = 'Hello, World!';"
-          language="javascript"
-        />
-      );
-    case "settings-panel":
-      return <SettingsPanel />;
+    case "double-combobox":
+      return <DoubleCombobox />;
     default:
       return <div>Component not found</div>;
   }
@@ -218,160 +205,151 @@ export function PriceInput() {
   );
 }
       `;
-    case "code-block":
-      return `import { useState } from "react"
-import { Check, Copy } from 'lucide-react'
-import { cn } from "@/lib/utils"
+    case "double-combobox":
+      return `"use client";
 
-interface CodeBlockProps {
-  code: string
-  language?: string
-  showLineNumbers?: boolean
-  className?: string
-}
+import { useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export function CodeBlock({
-  code,
-  language = "tsx",
-  showLineNumbers = true,
-  className,
-}: CodeBlockProps) {
-  const [copied, setCopied] = useState(false)
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(code)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-  const lines = code.trim().split("\\n")
+const currencies = [
+  { value: "btc", label: "Bitcoin", icon: "/btc.svg", symbol: "BTC" },
+  { value: "eth", label: "Ethereum", icon: "/eth.svg", symbol: "ETH" },
+  { value: "usdt", label: "TetherUSD", icon: "/usdt.svg", symbol: "USDT" },
+];
+const options = [
+  { value: "buy", label: "Buy" },
+  { value: "sell", label: "Sell" },
+  { value: "exchange", label: "Exchange" },
+];
 
-  return (
-    <div className={cn("relative overflow-hidden rounded-lg border bg-muted/50", className)}>
-      <div className="flex items-center justify-between border-b bg-muted/80 px-4 py-2">
-        <div className="text-xs font-medium">{language}</div>
-        <button
-          onClick={copyToClipboard}
-          className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted"
-        >
-          {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-        </button>
-      </div>
-      <div className="overflow-x-auto p-4">
-        <pre className="text-sm">
-          <code>
-            {lines.map((line, i) => (
-              <div key={i} className="flex">
-                {showLineNumbers && (
-                  <span className="mr-4 inline-block w-5 select-none text-right text-muted-foreground">
-                    {i + 1}
-                  </span>
-                )}
-                <span>{line}</span>
-              </div>
-            ))}
-          </code>
-        </pre>
-      </div>
-    </div>
-  )
-}`;
-    case "settings-panel":
-      return `import { useState } from "react"
-import { ChevronDown, ChevronUp } from 'lucide-react'
+export function DoubleCombobox() {
+  const [firstOpen, setFirstOpen] = useState(false);
+  const [secondOpen, setSecondOpen] = useState(false);
+  const [option, setOption] = useState("buy");
+  const [currency, setCurrency] = useState("btc");
 
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { cn } from "@/lib/utils"
-
-interface SettingsSectionProps {
-  title: string
-  children: React.ReactNode
-  defaultExpanded?: boolean
-}
-
-function SettingsSection({ title, children, defaultExpanded = false }: SettingsSectionProps) {
-  const [expanded, setExpanded] = useState(defaultExpanded)
+  const firstSelected = options.find((c) => c.value === option);
+  const secondSelected = currencies.find((c) => c.value === currency);
 
   return (
-    <div className="border-b pb-4">
-      <button
-        className="flex w-full items-center justify-between py-2 text-left font-medium"
-        onClick={() => setExpanded(!expanded)}
-      >
-        {title}
-        {expanded ? (
-          <ChevronUp className="h-4 w-4 text-muted-foreground" />
-        ) : (
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
-        )}
-      </button>
-      <div
-        className={cn(
-          "grid transition-all duration-200",
-          expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        )}
-      >
-        <div className="overflow-hidden pt-2">{children}</div>
-      </div>
-    </div>
-  )
-}
+    <div
+      className={cn(
+        "flex items-center rounded-md border bg-background text-sm shadow-sm ring-offset-background transition-colors focus-within:ring-2 focus-within:ring-ring/50 focus-within:ring-offset-2"
+      )}
+    >
+      {/* From Currency Button */}
+      <Popover open={firstOpen} onOpenChange={setFirstOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex h-9 items-center gap-2 px-3 text-sm focus:outline-none"
+          >
+            <span className="flex items-center gap-2">
+              {firstSelected?.label}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 opacity-50" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[180px] p-0">
+          <Command>
+            <CommandList>
+              <CommandEmpty>No currency found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((o) => (
+                  <CommandItem
+                    key={o.value}
+                    value={o.value}
+                    onSelect={(val) => {
+                      setFirstOpen(false);
+                      setOption(val);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        option === o.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {o.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
 
-export function SettingsPanel() {
-  return (
-    <div className="w-full max-w-md rounded-lg border bg-card p-6 shadow-sm">
-      <h2 className="mb-4 text-xl font-semibold">Settings</h2>
-      
-      <div className="space-y-4">
-        <SettingsSection title="Notifications" defaultExpanded>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="email-notifs">Email notifications</Label>
-              <Switch id="email-notifs" defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="push-notifs">Push notifications</Label>
-              <Switch id="push-notifs" />
-            </div>
-          </div>
-        </SettingsSection>
-        
-        <SettingsSection title="Appearance">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="dark-mode">Dark mode</Label>
-              <Switch id="dark-mode" />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="animations">Animations</Label>
-              <Switch id="animations" defaultChecked />
-            </div>
-          </div>
-        </SettingsSection>
-        
-        <SettingsSection title="Privacy">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="analytics">Allow analytics</Label>
-              <Switch id="analytics" defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="cookies">Accept cookies</Label>
-              <Switch id="cookies" defaultChecked />
-            </div>
-          </div>
-        </SettingsSection>
-      </div>
-      
-      <div className="mt-6 flex justify-end space-x-2">
-        <Button variant="outline">Cancel</Button>
-        <Button>Save Changes</Button>
-      </div>
+      {/* Divider */}
+      <div className="h-5 w-px bg-border mx-1" />
+
+      {/* To Currency Button */}
+      <Popover open={secondOpen} onOpenChange={setSecondOpen}>
+        <PopoverTrigger asChild>
+          <button
+            type="button"
+            className="flex h-9 items-center gap-2 px-3 text-sm focus:outline-none"
+          >
+            <span className="flex items-center gap-2">
+              <img src={secondSelected?.icon} className="h-4 w-4" alt="" />
+              {secondSelected?.label}
+            </span>
+            <ChevronsUpDown className="h-4 w-4 opacity-50" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[180px] p-0">
+          <Command>
+            <CommandInput placeholder="Currency..." />
+            <CommandList>
+              <CommandEmpty>No currency found.</CommandEmpty>
+              <CommandGroup>
+                {currencies.map((c) => (
+                  <CommandItem
+                    key={c.value}
+                    value={c.value}
+                    onSelect={(val) => {
+                      setCurrency(val);
+                      setSecondOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        currency === c.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <img
+                      src={c.icon}
+                      className="h-4 w-4"
+                      alt=""
+                    />
+                    {c.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
-  )
-}`;
+  );
+}
+      `;
     default:
       return "// Component code not available";
   }
@@ -380,3 +358,4 @@ export function SettingsPanel() {
 // Import SidebarTrigger to avoid TypeScript error
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { PriceInput } from "./custom/price-input";
+import { DoubleCombobox } from "./custom/double-combobox";

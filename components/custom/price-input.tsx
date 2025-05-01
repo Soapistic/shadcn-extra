@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Input } from "../ui/input";
 
 const currencies = [
   { value: "usd", label: "USD", icon: "🇺🇸", symbol: "$" },
@@ -41,13 +42,13 @@ export function PriceInput() {
       <span className="pl-3 pr-1 text-muted-foreground">
         {selectedCurrency?.symbol}
       </span>
-      <input
+      <Input
         type="text"
         placeholder="0.00"
         inputMode="decimal"
         value={amount}
         onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))}
-        className="h-9 w-[100px] bg-transparent py-1 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        className="border-0 h-9 w-[100px] bg-transparent py-1 text-sm outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
       />
       <div className="h-5 w-px bg-border mx-1" />
       <Popover open={open} onOpenChange={setOpen}>
