@@ -32,7 +32,6 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ components, selectedComponent, onSelectComponent }: AppSidebarProps) {
-  // Group components by category
   const componentsByCategory = components.reduce(
     (acc, component) => {
       if (!acc[component.category]) {

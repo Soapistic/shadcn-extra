@@ -27,7 +27,7 @@ const components = [
       "A custom loader component inspired by the shadcn/ui aesthetic",
     requirement:
       "This component is built Framer motion, it supports multiple sizes, color variants, and optional loading text.",
-    category: "Inputs",
+    category: "Utilities",
     icon: <Loader className="h-4 w-4" />,
   },
   {
