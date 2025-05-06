@@ -31,6 +31,7 @@ export function ComponentDisplay({ component }: ComponentDisplayProps) {
           <TabsList>
             <TabsTrigger value="preview">Preview</TabsTrigger>
             <TabsTrigger value="code">Code</TabsTrigger>
+            <TabsTrigger value="usage">Usage</TabsTrigger>
           </TabsList>
           <TabsContent value="preview" className="mt-4">
             <div className="flex min-h-[300px] items-center justify-center rounded-lg border p-10">
@@ -53,6 +54,24 @@ export function ComponentDisplay({ component }: ComponentDisplayProps) {
               <pre className="overflow-auto p-4">
                 <code className="text-sm text-muted-foreground">
                   {getComponentCode(component.id)}
+                </code>
+              </pre>
+            </div>
+          </TabsContent>
+          <TabsContent value="usage" className="mt-4">
+            <div className="rounded-lg border">
+              <div className="flex items-center justify-between border-b bg-muted/40 px-4 py-2">
+                <div className="flex items-center gap-2">
+                  <Code className="h-4 w-4" />
+                  <span className="text-sm font-medium">app.tsx</span>
+                </div>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+              <pre className="overflow-auto p-4">
+                <code className="text-sm text-muted-foreground">
+                  {getComponentUsage(component.id)}
                 </code>
               </pre>
             </div>
@@ -458,6 +477,26 @@ export function Loader({
 `;
     default:
       return "// Component code not available";
+  }
+}
+
+function getComponentUsage(id: string): string {
+  switch (id) {
+    case "price-input":
+      return `<PriceInput />`;
+    case "double-combobox":
+      return `<DoubleCombobox />`;
+    case "loader":
+      return `<Loader
+size="xl"
+variant="default"
+text="Please wait while we process your request"
+textStyle={{ fontSize: "18px", color: "#000" }}
+layout="withText"
+delayMs={200}
+/>`;
+    default:
+      return `Component not found`;
   }
 }
 
